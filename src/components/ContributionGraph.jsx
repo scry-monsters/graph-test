@@ -38,19 +38,31 @@ const ContributionGraph = () => {
 
   const generateGraphCells = () => {
     const cells = [];
-    const daysOfWeek = ['Monday', 'Wednesday', 'Friday'];
-  
   
     for (let week = 1; week <= 52; week++) {
       for (let day = 0; day < 7; day++) {
         const currentDate = new Date(2023, 0, (week - 1) * 7 + day + 1);
         const date = format(currentDate, 'yyyy-MM-dd');
         const count = contributionData[date] || 0;
+        let backgroundColor;
+  
+        if (count > 30) {
+          backgroundColor = '#254E77';
+        } else if (count > 20) {
+          backgroundColor = '#527BA0';
+        } else if (count > 10) {
+          backgroundColor = '#7FA8C9';
+        } else if (count > 1) {
+          backgroundColor = '#ACD5F2';
+        } else {
+          backgroundColor = '#EDEDED';
+        }
+  
         cells.push(
           <div
             key={`${week}-${day}`}
             className="day"
-            style={{ backgroundColor: `rgba(37, 78, 119, ${count / maxContributions})` }}
+            style={{ backgroundColor }}
             onClick={event => handleDayClick(count, date, event)}
             onMouseLeave={handleDayLeave}
           >
@@ -65,8 +77,9 @@ const ContributionGraph = () => {
                 }}
               >
                 {/* Tooltip content */}
+                <p className="tooltip-date">
                 <span className="tooltip-contributions">{tooltipInfo.count} contributions</span>
-                <p className="tooltip-date">{tooltipInfo.date}</p>
+                {tooltipInfo.date}</p>
               </div>
             )}
           </div>
@@ -76,9 +89,32 @@ const ContributionGraph = () => {
     return cells;
   };
 
+  const generateMonthLabels = () => {
+    const monthLabels = [];
+    const months = [
+      'Апр', 'Май', 'Июнь', 'Июнь', 'Авг.', 'Сент.',
+      'Окт.', 'Нояб.', 'Дек.', 'Янв.', 'Февр.', 'Март'
+    ];
+
+    for (let month = 0; month < 12; month++) {
+      monthLabels.push(
+        <div key={month} className="month-label">
+          {months[month]}
+        </div>
+      );
+    }
+
+    return monthLabels;
+  };
+
+  
+
   return (
     <div className="contribution-graph">
       <h2>Contribution Graph</h2>
+      <div className="month-labels">
+        {generateMonthLabels()}
+      </div>
       <div className="graph">
         {generateGraphCells()}
       </div>
